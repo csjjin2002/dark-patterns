@@ -19,12 +19,6 @@ button,input,select{font-family:inherit;outline:none}
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const rootEl = document.getElementById("root");
-  if (ReactDOM.createRoot) {
-    ReactDOM.createRoot(rootEl).render(React.createElement(App));
-  } else {
-    ReactDOM.render(React.createElement(App), rootEl);
-  }
 
 // ====== EXPERIMENT CONFIG ======
 const TN={FA:{ko:"강제행동",en:"Forced Action"},OB:{ko:"방해·저지",en:"Obstruction"},SN:{ko:"스네이킹",en:"Sneaking"},II:{ko:"인터페이스 조작",en:"Interface Interference"},SE:{ko:"사회공학",en:"Social Engineering"}};
@@ -404,7 +398,12 @@ function App(){
     React.createElement("p",{style:{marginTop:10,fontSize:9,color:"#9CA3AF",textAlign:"center"}},"상명대학교 대학원 | Study 4: Dark Pattern Labeling Usability Test"));
 }
 
-ReactDOM.render(React.createElement(App),document.getElementById("root"));
+const rootEl = document.getElementById("root");
+  if (ReactDOM.createRoot) {
+    ReactDOM.createRoot(rootEl).render(React.createElement(App));
+  } else {
+    ReactDOM.render(React.createElement(App), rootEl);
+  }
 </script>
 </body>
 </html>
