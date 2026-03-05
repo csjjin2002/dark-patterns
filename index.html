@@ -116,7 +116,7 @@ function Banner({label,type,onD}){
 function Tags({label,type}){
   if(label==="L0")return null;
   const t={FA:[{t:"🔴 번들 동의 강제: 가격인상+마케팅+개인정보를 한 번에 묶어 동의 강제",bg:"#FEE2E2",b:"#FCA5A5",c:"#991B1B"},{t:"🟠 거부 불가: '나중에 하기'는 진짜 거부가 아님",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"},{t:"⚠️ 스네이킹: 실제 결과가 9pt 초소형으로만 공개",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"}],OB:[{t:"⚠️ 사회공학: 해지 이유 수집 = 이탈 마찰 증가",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"},{t:"🔴 인터페이스 조작: 유지 버튼이 해지보다 훨씬 강조됨",bg:"#FEE2E2",b:"#FCA5A5",c:"#991B1B"},{t:"🟠 방해: '해지하기' 버튼이 숨겨진 디자인",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"}],SN:[{t:"🟠 드립 프라이싱: 멤버십 비용(7,890원)이 작은 글씨로 숨겨짐",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"},{t:"⚠️ 실제 청구: 19,800+7,890=27,690원 (불일치)",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"}],II:[{t:"🟠 선택사항 동의가 기본 체크됨 — 사실상 강제 동의",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"},{t:"⚠️ 거부 버튼 최소화: 시각적으로 숨겨짐",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"},{t:"🔴 자동 결제 안내 9pt 초소형 숨김",bg:"#FEE2E2",b:"#FCA5A5",c:"#991B1B"}],SE:[{t:"🔴 소셜 프루프: 긍정 후기만 선별, 신뢰도 조작",bg:"#FEE2E2",b:"#FCA5A5",c:"#991B1B"},{t:"🟠 인위적 긴급성: 검증 불가한 허위 긴급성",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"},{t:"⚠️ 컨펌 쉐이밍: 거부를 손해 프레이밍",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"}]};
-  return React.createElement(React.Fragment,null,(t[type]||[]).map((x,i)=>React.createElement("div",{key:i,style:{background:x.bg,border:"1px solid "+x.b,borderRadius:6,padding:"8px 10px",fontSize:11,color:x.c,lineHeight:1.5,marginTop:8}},x.t)));
+  return React.createElement(React.Fragment,null,(t[type]||[]).map((x,i)=>React.createElement("div",{key:i,style:{background:hexToRgba(x.bg,0.7),border:"1px solid "+x.b,borderRadius:6,padding:"8px 10px",fontSize:11,color:x.c,lineHeight:1.5,marginTop:8}},x.t)));
 }
 
 function Popup({type,onClose}){
@@ -135,8 +135,8 @@ function Popup({type,onClose}){
 // ====== BUTTONS ======
 const bb={background:"#1A3A6B",color:"#fff",border:"none",borderRadius:8,padding:"15px 0",fontSize:16,fontWeight:700,cursor:"pointer",width:"100%",marginTop:8};
 const gb={background:"#F3F4F6",color:"#9CA3AF",border:"none",borderRadius:8,padding:"14px 0",fontSize:14,cursor:"pointer",width:"100%",marginTop:6};
-const ob={background:"#F59E0B",color:"#fff",border:"none",borderRadius:8,padding:"15px 0",fontSize:16,fontWeight:700,cursor:"pointer",width:"100%"};
-const rb2={background:"#DC2626",color:"#fff",border:"none",borderRadius:8,padding:"15px 0",fontSize:16,fontWeight:700,cursor:"pointer",width:"100%"};
+const ob={background:"rgba(245,158,11,0.7)",color:"#fff",border:"none",borderRadius:8,padding:"15px 0",fontSize:16,fontWeight:700,cursor:"pointer",width:"100%"};
+const rb2={background:"rgba(220,38,38,0.7)",border:"none",borderRadius:8,padding:"15px 0",fontSize:16,fontWeight:700,cursor:"pointer",width:"100%"};
 const gh={background:"transparent",color:"#9CA3AF",border:"none",padding:"12px 0",fontSize:13,cursor:"pointer",width:"100%",textAlign:"center"};
 
 // ====== TASK SCREENS ======
