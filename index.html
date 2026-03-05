@@ -1,415 +1,423 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>모바일 커머스 앱 다크패턴 라벨링에 따른 사용자 인지 차이 실험</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:#F0F2F5;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;min-height:100vh}
-button,input,select{font-family:inherit;outline:none}
-::-webkit-scrollbar{width:0;background:transparent}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>모바일 커머스 앱 다크패턴 라벨링에 따른 사용자 인지 차이 실험</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;background:#F0F2F5;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;min-height:100vh}
+    button,input,select{font-family:inherit;outline:none}
+    ::-webkit-scrollbar{width:0;background:transparent}
+  </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
+  <div id="root"></div>
+  <script type="text/babel">
+    // ====== HELPER: hexToRgba ======
+    // [FIX #2] This function was missing — called in Tags but never defined
+    function hexToRgba(hex, alpha) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+    }
 
-// ====== EXPERIMENT CONFIG ======
-const TN={FA:{ko:"강제행동",en:"Forced Action"},OB:{ko:"방해·저지",en:"Obstruction"},SN:{ko:"스네이킹",en:"Sneaking"},II:{ko:"인터페이스 조작",en:"Interface Interference"},SE:{ko:"사회공학",en:"Social Engineering"}};
-const LN={L0:"No Label",L1:"Passive Label",L2:"Interactive Label"};
+    // ====== EXPERIMENT CONFIG ======
+    const TN={FA:{ko:"강제행동",en:"Forced Action"},OB:{ko:"방해·저지",en:"Obstruction"},SN:{ko:"스네이킹",en:"Sneaking"},II:{ko:"인터페이스 조작",en:"Interface Interference"},SE:{ko:"사회공학",en:"Social Engineering"}};
+    const LN={L0:"No Label",L1:"Passive Label",L2:"Interactive Label"};
 
-// New sequence structure: each task has its own label
-const SEQUENCES = [
-  { id:1, tasks:[{type:"FA",label:"L0"},{type:"OB",label:"L1"},{type:"SN",label:"L1"},{type:"II",label:"L2"},{type:"SE",label:"L2"}] },
-  { id:2, tasks:[{type:"OB",label:"L0"},{type:"SN",label:"L1"},{type:"II",label:"L1"},{type:"SE",label:"L2"},{type:"FA",label:"L2"}] },
-  { id:3, tasks:[{type:"SN",label:"L0"},{type:"II",label:"L1"},{type:"SE",label:"L1"},{type:"FA",label:"L2"},{type:"OB",label:"L2"}] },
-  { id:4, tasks:[{type:"II",label:"L0"},{type:"SE",label:"L1"},{type:"FA",label:"L1"},{type:"OB",label:"L2"},{type:"SN",label:"L2"}] },
-  { id:5, tasks:[{type:"SE",label:"L0"},{type:"FA",label:"L1"},{type:"OB",label:"L1"},{type:"SN",label:"L2"},{type:"II",label:"L2"}] },
-];
-const MAX_PER_SEQ = 20;
-const MQ="이 인터페이스가 나의 결정을 조종하려 했다고 느꼈다.";
-const POST_ITEMS=[{id:"fairness",text:"이 인터페이스는 공정하다고 느꼈다."},{id:"transparency",text:"이 인터페이스는 정보를 투명하게 제공했다."},{id:"trust",text:"이 서비스를 신뢰할 수 있다고 느꼈다."}];
+    const SEQUENCES = [
+      { id:1, tasks:[{type:"FA",label:"L0"},{type:"OB",label:"L1"},{type:"SN",label:"L1"},{type:"II",label:"L2"},{type:"SE",label:"L2"}] },
+      { id:2, tasks:[{type:"OB",label:"L0"},{type:"SN",label:"L1"},{type:"II",label:"L1"},{type:"SE",label:"L2"},{type:"FA",label:"L2"}] },
+      { id:3, tasks:[{type:"SN",label:"L0"},{type:"II",label:"L1"},{type:"SE",label:"L1"},{type:"FA",label:"L2"},{type:"OB",label:"L2"}] },
+      { id:4, tasks:[{type:"II",label:"L0"},{type:"SE",label:"L1"},{type:"FA",label:"L1"},{type:"OB",label:"L2"},{type:"SN",label:"L2"}] },
+      { id:5, tasks:[{type:"SE",label:"L0"},{type:"FA",label:"L1"},{type:"OB",label:"L1"},{type:"SN",label:"L2"},{type:"II",label:"L2"}] },
+    ];
 
-// ====== QUOTA ======
-function getQuotas(){try{return JSON.parse(localStorage.getItem("dp_q2")||"{}");}catch(e){return{};}}
-function saveQuotas(q){try{localStorage.setItem("dp_q2",JSON.stringify(q));}catch(e){}}
-function getSeqCount(q,sid){return q["S"+sid]||0;}
-function incSeq(sid){const q=getQuotas();q["S"+sid]=(q["S"+sid]||0)+1;saveQuotas(q);return q;}
-function assignSequence(){
-  const q=getQuotas();let best=[];let minC=Infinity;
-  SEQUENCES.forEach(s=>{const c=getSeqCount(q,s.id);if(c<MAX_PER_SEQ&&c<minC){minC=c;best=[s];}else if(c===minC&&c<MAX_PER_SEQ){best.push(s);}});
-  if(!best.length)best=[...SEQUENCES];
-  return best[Math.floor(Math.random()*best.length)];
-}
+    const MAX_PER_SEQ = 20;
+    const MQ="이 인터페이스가 나의 결정을 조종하려 했다고 느꼈다.";
+    const POST_ITEMS=[{id:"fairness",text:"이 인터페이스는 공정하다고 느꼈다."},{id:"transparency",text:"이 인터페이스는 정보를 투명하게 제공했다."},{id:"trust",text:"이 서비스를 신뢰할 수 있다고 느꼈다."}];
 
-// ====== DATA STORAGE — Google Sheets ======
-const SHEETS_URL = "https://script.google.com/macros/s/AKfycbwTcXYPzb-s_SJa6d22olhk2g1aWIUBZhBhwVrYlRU4W3qDu6yVJzcC0W-XPbEp2k-f/exec";
+    // ====== QUOTA ======
+    function getQuotas(){try{return JSON.parse(localStorage.getItem("dp_q2")||"{}");}catch(e){return{};}}
+    function saveQuotas(q){try{localStorage.setItem("dp_q2",JSON.stringify(q));}catch(e){}}
+    function getSeqCount(q,sid){return q["S"+sid]||0;}
+    function incSeq(sid){const q=getQuotas();q["S"+sid]=(q["S"+sid]||0)+1;saveQuotas(q);return q;}
+    function assignSequence(){
+      const q=getQuotas();let best=[];let minC=Infinity;
+      SEQUENCES.forEach(s=>{const c=getSeqCount(q,s.id);if(c<MAX_PER_SEQ&&c<minC){minC=c;best=[s];}else if(c===minC&&c<MAX_PER_SEQ){best.push(s);}});
+      if(!best.length)best=[...SEQUENCES];
+      return best[Math.floor(Math.random()*best.length)];
+    }
 
-async function saveResult(payload){
-  // 1) Local backup
-  try{const d=JSON.parse(localStorage.getItem("dp_results2")||"[]");d.push(payload);localStorage.setItem("dp_results2",JSON.stringify(d));}catch(e){}
-  // 2) Send to Google Sheets via fetch (redirect follow for Apps Script)
-  try{
-    const res = await fetch(SHEETS_URL, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: {"Content-Type": "text/plain;charset=utf-8"},
-    });
-    console.log("Sent to Sheets:", payload.participantId);
-  }catch(e){
-    // Fallback: use image beacon
-    try{
-      const encoded = encodeURIComponent(JSON.stringify(payload));
-      const img = new Image();
-      img.src = SHEETS_URL + "?data=" + encoded;
-    }catch(e2){}
-    console.error("Sheets error, used fallback:", e);
-  }
-}
+    // ====== DATA STORAGE — Google Sheets ======
+    const SHEETS_URL = "https://script.google.com/macros/s/AKfycbwTcXYPzb-s_SJa6d22olhk2g1aWIUBZhBhwVrYlRU4W3qDu6yVJzcC0W-XPbEp2k-f/exec";
 
-// ====== FIXED PHONE FRAME ======
-const PHONE_W = 390;
-const PHONE_H = 760;
+    async function saveResult(payload){
+      try{const d=JSON.parse(localStorage.getItem("dp_results2")||"[]");d.push(payload);localStorage.setItem("dp_results2",JSON.stringify(d));}catch(e){}
+      try{
+        const res = await fetch(SHEETS_URL, {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: {"Content-Type": "text/plain;charset=utf-8"},
+        });
+        console.log("Sent to Sheets:", payload.participantId);
+      }catch(e){
+        try{
+          const encoded = encodeURIComponent(JSON.stringify(payload));
+          const img = new Image();
+          img.src = SHEETS_URL + "?data=" + encoded;
+        }catch(e2){}
+        console.error("Sheets error, used fallback:", e);
+      }
+    }
 
-function Phone({children,step,total,showBar=true}){
-  return React.createElement("div",{style:{
-    width:PHONE_W, maxWidth:"100%", minHeight:PHONE_H, background:"#fff",
-    borderRadius:40, boxShadow:"0 4px 30px rgba(0,0,0,0.12)", overflow:"hidden",
-    position:"relative", border:"6px solid #222", margin:"0 auto",
-    display:"flex", flexDirection:"column"
-  }},
-    React.createElement("div",{style:{background:"#000",color:"#fff",padding:"6px 24px",display:"flex",justifyContent:"space-between",fontSize:12,fontWeight:600,flexShrink:0}},
-      React.createElement("span",null,"9:41"),React.createElement("span",null,"📶 🔋")),
-    showBar && React.createElement("div",{style:{height:3,background:"#E5E5E5",flexShrink:0}},
-      React.createElement("div",{style:{height:"100%",width:`${(step/total)*100}%`,background:"#3B82F6",transition:"width 0.4s"}})),
-    React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column",overflowY:"auto",minHeight:0}},children));
-}
+    // ====== FIXED PHONE FRAME ======
+    const PHONE_W = 390;
+    const PHONE_H = 760;
 
-// ====== LIKERT ======
-function Likert({q,v,onChange}){
-  const lb=["전혀\n아니다","","","보통","","","매우\n그렇다"];
-  return React.createElement("div",{style:{margin:"16px 0"}},
-    React.createElement("p",{style:{fontSize:13,fontWeight:500,marginBottom:12,lineHeight:1.6,color:"#333"}},q),
-    React.createElement("div",{style:{display:"flex",justifyContent:"space-between"}},[1,2,3,4,5,6,7].map(n=>
-      React.createElement("div",{key:n,style:{display:"flex",flexDirection:"column",alignItems:"center",gap:4}},
-        React.createElement("button",{onClick:()=>onChange(n),style:{width:38,height:38,borderRadius:"50%",border:v===n?"2px solid #3B82F6":"2px solid #D1D5DB",background:v===n?"#3B82F6":"#fff",color:v===n?"#fff":"#9CA3AF",fontWeight:700,fontSize:14,cursor:"pointer"}},n),
-        React.createElement("span",{style:{fontSize:9,color:"#aaa",textAlign:"center",lineHeight:1.1,whiteSpace:"pre-line"}},lb[n-1])))));
-}
+    function Phone({children,step,total,showBar=true}){
+      return React.createElement("div",{style:{
+        width:PHONE_W, maxWidth:"100%", minHeight:PHONE_H, background:"#fff",
+        borderRadius:40, boxShadow:"0 4px 30px rgba(0,0,0,0.12)", overflow:"hidden",
+        position:"relative", border:"6px solid #222", margin:"0 auto",
+        display:"flex", flexDirection:"column"
+      }},
+      React.createElement("div",{style:{background:"#000",color:"#fff",padding:"6px 24px",display:"flex",justifyContent:"space-between",fontSize:12,fontWeight:600,flexShrink:0}},
+        React.createElement("span",null,"9:41"),React.createElement("span",null,"📶 🔋")),
+      showBar && React.createElement("div",{style:{height:3,background:"#E5E5E5",flexShrink:0}},
+        React.createElement("div",{style:{height:"100%",width:`${(step/total)*100}%`,background:"#3B82F6",transition:"width 0.4s"}})),
+      React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column",overflowY:"auto",minHeight:0}},children));
+    }
 
-const LABEL_ALPHA = 0.7;
-function hexToRgba(hex, alpha) {
-  const r = parseInt(hex.slice(1,3), 16);
-  const g = parseInt(hex.slice(3,5), 16);
-  const b = parseInt(hex.slice(5,7), 16);
-  return `rgba(${r},${g},${b},${alpha})`;
-}
-// ====== BANNER + TAGS ======
-function Banner({label,type,onD}){
-  if(label==="L0")return null;const n=TN[type];const sc={FA:87,OB:82,SN:91,II:78,SE:85};
-  if(label==="L1")return React.createElement("div",{style: {background: `rgba(245,158,11,${LABEL_ALPHA})`, color:"#fff",padding:"10px 16px",fontSize:12,fontWeight:600,flexShrink:0}},"⚠️ 다크패턴 감지: "+n.ko+" ("+n.en+")");
-  return React.createElement("div",{style:{background: `rgba(220,38,38,${LABEL_ALPHA})`,color:"#fff",padding:"10px 16px",fontSize:12,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:6,flexShrink:0}},
-    React.createElement("span",null,"🔴 위험 "+sc[type]+"/100 — "+n.ko),
-    React.createElement("button",{onClick:onD,style:{background:"rgba(255,255,255,0.2)",border:"1px solid rgba(255,255,255,0.4)",borderRadius:4,color:"#fff",padding:"3px 10px",fontSize:11,cursor:"pointer"}},"자세히 >"));
-}
+    // ====== LIKERT ======
+    function Likert({q,v,onChange}){
+      const lb=["전혀\n아니다","","","보통","","","매우\n그렇다"];
+      return React.createElement("div",{style:{margin:"16px 0"}},
+        React.createElement("p",{style:{fontSize:13,fontWeight:500,marginBottom:12,lineHeight:1.6,color:"#333"}},q),
+        React.createElement("div",{style:{display:"flex",justifyContent:"space-between"}},[1,2,3,4,5,6,7].map(n=>
+          React.createElement("div",{key:n,style:{display:"flex",flexDirection:"column",alignItems:"center",gap:4}},
+            React.createElement("button",{onClick:()=>onChange(n),style:{width:38,height:38,borderRadius:"50%",border:v===n?"2px solid #3B82F6":"2px solid #D1D5DB",background:v===n?"#3B82F6":"#fff",color:v===n?"#fff":"#9CA3AF",fontWeight:700,fontSize:14,cursor:"pointer"}},n),
+            React.createElement("span",{style:{fontSize:9,color:"#aaa",textAlign:"center",lineHeight:1.1,whiteSpace:"pre-line"}},lb[n-1])))));
+    }
 
-function Tags({label,type}){
-  if(label==="L0")return null;
-  const t={FA:[{t:"🔴 번들 동의 강제: 가격인상+마케팅+개인정보를 한 번에 묶어 동의 강제",bg:"#FEE2E2",b:"#FCA5A5",c:"#991B1B"},{t:"🟠 거부 불가: '나중에 하기'는 진짜 거부가 아님",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"},{t:"⚠️ 스네이킹: 실제 결과가 9pt 초소형으로만 공개",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"}],OB:[{t:"⚠️ 사회공학: 해지 이유 수집 = 이탈 마찰 증가",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"},{t:"🔴 인터페이스 조작: 유지 버튼이 해지보다 훨씬 강조됨",bg:"#FEE2E2",b:"#FCA5A5",c:"#991B1B"},{t:"🟠 방해: '해지하기' 버튼이 숨겨진 디자인",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"}],SN:[{t:"🟠 드립 프라이싱: 멤버십 비용(7,890원)이 작은 글씨로 숨겨짐",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"},{t:"⚠️ 실제 청구: 19,800+7,890=27,690원 (불일치)",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"}],II:[{t:"🟠 선택사항 동의가 기본 체크됨 — 사실상 강제 동의",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"},{t:"⚠️ 거부 버튼 최소화: 시각적으로 숨겨짐",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"},{t:"🔴 자동 결제 안내 9pt 초소형 숨김",bg:"#FEE2E2",b:"#FCA5A5",c:"#991B1B"}],SE:[{t:"🔴 소셜 프루프: 긍정 후기만 선별, 신뢰도 조작",bg:"#FEE2E2",b:"#FCA5A5",c:"#991B1B"},{t:"🟠 인위적 긴급성: 검증 불가한 허위 긴급성",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"},{t:"⚠️ 컨펌 쉐이밍: 거부를 손해 프레이밍",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"}]};
-  return React.createElement(React.Fragment,null,(t[type]||[]).map((x,i)=>React.createElement("div",{key:i,style:{background:hexToRgba(x.bg,0.7),border:"1px solid "+x.b,borderRadius:6,padding:"8px 10px",fontSize:11,color:x.c,lineHeight:1.5,marginTop:8}},x.t)));
-}
+    const LABEL_ALPHA = 0.7;
 
-function Popup({type,onClose}){
-  const d={FA:{s:87,i:["번들 동의 강제: 가격인상+마케팅+개인정보 묶어 강제","거부 불가: '나중에 하기'는 진짜 거부 아님","스네이킹: 실제 결과 9pt 초소형 공개"]},OB:{s:82,i:["사회공학: 해지 이유 수집=이탈 마찰 증가","인터페이스 조작: 유지 버튼 해지보다 강조","방해: 해지 버튼 의도적 숨김"]},SN:{s:91,i:["드립 프라이싱: 멤버십 비용 작은 글씨 숨김","실제 청구: 19,800+7,890=27,690원 불일치","자동결제 함정: 무료체험 후 자동 과금"]},II:{s:78,i:["동의 기본 체크—사실상 강제 동의","거부 버튼 최소화: 시각적 숨김","자동 결제 안내 9pt 초소형 숨김"]},SE:{s:85,i:["소셜 프루프: 긍정 후기만 선별","인위적 긴급성: 검증 불가 허위 긴급성","컨펌 쉐이밍: 거부를 손해 프레이밍"]}};
-  const x=d[type];
-  return React.createElement("div",{style:{position:"absolute",inset:0,background:"rgba(0,0,0,0.6)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:100,padding:24}},
-    React.createElement("div",{style:{background:"#fff",borderRadius:16,padding:24,width:"100%",maxWidth:340}},
-      React.createElement("p",{style:{fontSize:13,fontWeight:700,color:"#DC2626"}},"⚠️ "+TN[type].ko+" 위험 점수"),
-      React.createElement("p",{style:{fontSize:32,fontWeight:800,color:"#DC2626",margin:"4px 0 16px"}},x.s+"/100"),
-      React.createElement("div",{style:{background:"#FEF2F2",borderRadius:10,padding:14,marginBottom:16}},
-        React.createElement("p",{style:{fontSize:12,fontWeight:600,color:"#991B1B",marginBottom:8}},"감지된 문제:"),
-        x.i.map((t,i)=>React.createElement("p",{key:i,style:{fontSize:12,color:"#555",lineHeight:1.6,marginBottom:6}},"• "+t))),
-      React.createElement("button",{onClick:onClose,style:{background:"#DC2626",color:"#fff",border:"none",borderRadius:8,padding:"14px 0",fontSize:15,fontWeight:700,cursor:"pointer",width:"100%"}},"확인하고 계속하기")));
-}
+    // ====== BANNER + TAGS ======
+    function Banner({label,type,onD}){
+      if(label==="L0")return null;const n=TN[type];const sc={FA:87,OB:82,SN:91,II:78,SE:85};
 
-// ====== BUTTONS ======
-const bb={background:"#1A3A6B",color:"#fff",border:"none",borderRadius:8,padding:"15px 0",fontSize:16,fontWeight:700,cursor:"pointer",width:"100%",marginTop:8};
-const gb={background:"#F3F4F6",color:"#9CA3AF",border:"none",borderRadius:8,padding:"14px 0",fontSize:14,cursor:"pointer",width:"100%",marginTop:6};
-const ob={background:"rgba(245,158,11,0.7)",color:"#fff",border:"none",borderRadius:8,padding:"15px 0",fontSize:16,fontWeight:700,cursor:"pointer",width:"100%"};
-const rb2={background:"rgba(220,38,38,0.7)",border:"none",borderRadius:8,padding:"15px 0",fontSize:16,fontWeight:700,cursor:"pointer",width:"100%"};
-const gh={background:"transparent",color:"#9CA3AF",border:"none",padding:"12px 0",fontSize:13,cursor:"pointer",width:"100%",textAlign:"center"};
+      if(label==="L1")return React.createElement("div",{style: {background: `rgba(245,158,11,${LABEL_ALPHA})`, color:"#fff",padding:"10px 16px",fontSize:12,fontWeight:600,flexShrink:0}},"⚠️ 다크패턴 감지: "+n.ko+" ("+n.en+")");
 
-// ====== TASK SCREENS ======
-function FAScreen({label,onA,tr}){
-  return React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column"}},
-    React.createElement(Banner,{label,type:"FA",onD:()=>{tr("label_detail");onA("openDetail");}}),
-    React.createElement("div",{style:{background:"#FFF8E7",padding:"10px 20px",textAlign:"center"}},React.createElement("span",{style:{color:"#D97706",fontSize:13}},"8월 10일부터 Yes! 멤버십 월회비가 7,890원으로 변경됩니다")),
-    React.createElement("div",{style:{padding:"20px 24px",flex:1,display:"flex",flexDirection:"column"}},
-      React.createElement("h2",{style:{fontSize:20,fontWeight:700,textAlign:"center",margin:0,color:"#111"}},"변경에 동의하고"),
-      React.createElement("h2",{style:{fontSize:20,fontWeight:700,textAlign:"center",margin:"0 0 16px",color:"#111"}},"멤버십 혜택을 계속 받아보세요"),
-      React.createElement("div",{style:{background:"#F9FAFB",borderRadius:12,padding:16,marginBottom:12}},
-        React.createElement("p",{style:{fontSize:14,fontWeight:600,textAlign:"center",marginBottom:10,color:"#333"}},"C커머스 쇼핑 혜택"),
-        React.createElement("div",{style:{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:"8px 16px",fontSize:13,color:"#555"}},["🚚 무료배송","📦 무료반품","⚡ 바른도착","🏷 Yes! 멤버십할인","🛒 식품구매","💳 Yes! 멤버십카드"].map(b=>React.createElement("span",{key:b},b)))),
-      React.createElement("div",{style:{background:"#E8F5E9",borderRadius:8,padding:8,textAlign:"center",marginBottom:12,fontSize:13,color:"#2E7D32"}},"동의 후에도 해지 가능"),
-      React.createElement("button",{onClick:()=>{tr("agree_cta");onA("next");},style:bb},"동의하고 혜택 계속 받기 >"),
-      React.createElement("button",{onClick:()=>{tr("later_btn");onA("next");},style:gb},"나중에 하기"),
-      React.createElement("p",{style:{fontSize:9,color:"#C0C0C0",textAlign:"center",marginTop:10,lineHeight:1.5}},"• 월회비 변경에 동의하면 8월 10일부터 7,890원이 결제됩니다."),
-      React.createElement(Tags,{label,type:"FA"})));
-}
+      // [FIX #1] Removed double comma — was: `...${LABEL_ALPHA})`,,color:...`
+      return React.createElement("div",{style:{background: `rgba(220,38,38,${LABEL_ALPHA})`,color:"#fff",padding:"10px 16px",fontSize:12,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:6,flexShrink:0}},
+        React.createElement("span",null,"🔴 위험 "+sc[type]+"/100 — "+n.ko),
+        React.createElement("button",{onClick:onD,style:{background:"rgba(255,255,255,0.2)",border:"1px solid rgba(255,255,255,0.4)",borderRadius:4,color:"#fff",padding:"3px 10px",fontSize:11,cursor:"pointer"}},"자세히 >"));
+    }
 
-function OBScreen({label,onA,tr}){
-  const[s,setS]=useState(null);
-  const r=["월회비가 비쌈","할인 혜택이 적음","최근 쇼핑 횟수가 줄었음","무료배송, 빠른 배송이 불필요함","기타"];
-  return React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column"}},
-    React.createElement(Banner,{label,type:"OB",onD:()=>{tr("label_detail");onA("openDetail");}}),
-    React.createElement("div",{style:{padding:"20px 24px",flex:1,display:"flex",flexDirection:"column"}},
-      React.createElement("h2",{style:{fontSize:17,fontWeight:700,textAlign:"center",marginBottom:4,color:"#111"}},"Yes! 멤버십 멤버십 해지 신청"),
-      React.createElement("p",{style:{fontSize:15,fontWeight:600,textAlign:"center",marginBottom:16,color:"#333"}},"서비스 개선을 위해 해지하는 이유를 알려주세요"),
-      r.map((x,i)=>React.createElement("button",{key:i,onClick:()=>{setS(i);tr("reason_select");},style:{display:"flex",alignItems:"center",gap:12,background:s===i?"#EFF6FF":"#F9FAFB",border:s===i?"1.5px solid #3B82F6":"1.5px solid #E5E7EB",borderRadius:10,padding:"13px 14px",marginBottom:7,cursor:"pointer",width:"100%",textAlign:"left",fontSize:14,color:"#333"}},
-        React.createElement("span",{style:{width:18,height:18,borderRadius:"50%",border:s===i?"5px solid #3B82F6":"2px solid #D1D5DB",flexShrink:0}}),x)),
-      React.createElement("button",{onClick:()=>{tr("keep_cta");onA("next");},style:{...bb,marginTop:12}},"멤버십 유지하기"),
-      React.createElement("button",{onClick:()=>{tr("cancel_btn");onA("next");},style:gb},"해지하기"),
-      React.createElement(Tags,{label,type:"OB"})));
-}
+    function Tags({label,type}){
+      if(label==="L0")return null;
+      const t={FA:[{t:"🔴 번들 동의 강제: 가격인상+마케팅+개인정보를 한 번에 묶어 동의 강제",bg:"#FEE2E2",b:"#FCA5A5",c:"#991B1B"},{t:"🟠 거부 불가: '나중에 하기'는 진짜 거부가 아님",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"},{t:"⚠️ 스네이킹: 실제 결과가 9pt 초소형으로만 공개",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"}],OB:[{t:"⚠️ 사회공학: 해지 이유 수집 = 이탈 마찰 증가",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"},{t:"🔴 인터페이스 조작: 유지 버튼이 해지보다 훨씬 강조됨",bg:"#FEE2E2",b:"#FCA5A5",c:"#991B1B"},{t:"🟠 방해: '해지하기' 버튼이 숨겨진 디자인",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"}],SN:[{t:"🟠 드립 프라이싱: 멤버십 비용(7,890원)이 작은 글씨로 숨겨짐",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"},{t:"⚠️ 실제 청구: 19,800+7,890=27,690원 (불일치)",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"}],II:[{t:"🟠 선택사항 동의가 기본 체크됨 — 사실상 강제 동의",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"},{t:"⚠️ 거부 버튼 최소화: 시각적으로 숨겨짐",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"},{t:"🔴 자동 결제 안내 9pt 초소형 숨김",bg:"#FEE2E2",b:"#FCA5A5",c:"#991B1B"}],SE:[{t:"🔴 소셜 프루프: 긍정 후기만 선별, 신뢰도 조작",bg:"#FEE2E2",b:"#FCA5A5",c:"#991B1B"},{t:"🟠 인위적 긴급성: 검증 불가한 허위 긴급성",bg:"#FFF7ED",b:"#FDBA74",c:"#9A3412"},{t:"⚠️ 컨펌 쉐이밍: 거부를 손해 프레이밍",bg:"#FEFCE8",b:"#FDE047",c:"#854D0E"}]};
+      return React.createElement(React.Fragment,null,(t[type]||[]).map((x,i)=>React.createElement("div",{key:i,style:{background:hexToRgba(x.bg,0.7),border:"1px solid "+x.b,borderRadius:6,padding:"8px 10px",fontSize:11,color:x.c,lineHeight:1.5,marginTop:8}},x.t)));
+    }
 
-function SNScreen({label,onA,tr}){
-  return React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column"}},
-    React.createElement(Banner,{label,type:"SN",onD:()=>{tr("label_detail");onA("openDetail");}}),
-    React.createElement("div",{style:{padding:"20px 24px",flex:1,display:"flex",flexDirection:"column"}},
-      React.createElement("h2",{style:{fontSize:17,fontWeight:700,textAlign:"center",marginBottom:16,color:"#111"}},"주문 확인"),
-      React.createElement("div",{style:{display:"flex",gap:12,padding:14,background:"#F9FAFB",borderRadius:10,marginBottom:16}},
-        React.createElement("div",{style:{width:64,height:64,background:"#E5E7EB",borderRadius:8,flexShrink:0}}),
-        React.createElement("div",null,
-          React.createElement("p",{style:{fontSize:14,fontWeight:600,color:"#111"}},"닥터지 레드 블레미쉬 클리어 수딩 크림"),
-          React.createElement("p",{style:{fontSize:12,color:"#9CA3AF"}},"50ml / 수량: 1개"),
-          React.createElement("p",{style:{fontSize:16,fontWeight:700,color:"#111",marginTop:4}},"19,800원"))),
-      React.createElement(Tags,{label,type:"SN"}),
-      React.createElement("div",{style:{borderTop:"1px solid #F3F4F6",paddingTop:16,marginTop:12}},
-        React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:14}},React.createElement("span",{style:{color:"#6B7280"}},"상품 금액"),React.createElement("span",{style:{fontWeight:600,color:"#111"}},"19,800원")),
-        React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:14}},React.createElement("span",{style:{color:"#6B7280"}},"배송비"),React.createElement("span",{style:{fontWeight:600,color:"#3B82F6"}},"무료")),
-        React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:10,fontSize:11}},React.createElement("span",{style:{color:"#D1D5DB"}},"Yes! 멤버십 멤버십 월정액"),React.createElement("span",{style:{color:"#D1D5DB"}},"7,890원")),
-        React.createElement("div",{style:{borderTop:"2px solid #111",paddingTop:10,display:"flex",justifyContent:"space-between"}},React.createElement("span",{style:{fontSize:16,fontWeight:700}},"결제 예정금액"),React.createElement("span",{style:{fontSize:18,fontWeight:700,color:"#DC2626"}},"27,690원"))),
-      React.createElement("div",{style:{flex:1}}),
-      React.createElement("button",{onClick:()=>{tr("pay_cta");onA("next");},style:rb2},"27,690원 결제하기"),
-      React.createElement("button",{onClick:()=>{tr("cancel_pay");onA("next");},style:gh},"취소")));
-}
+    function Popup({type,onClose}){
+      const d={FA:{s:87,i:["번들 동의 강제: 가격인상+마케팅+개인정보 묶어 강제","거부 불가: '나중에 하기'는 진짜 거부 아님","스네이킹: 실제 결과 9pt 초소형 공개"]},OB:{s:82,i:["사회공학: 해지 이유 수집=이탈 마찰 증가","인터페이스 조작: 유지 버튼 해지보다 강조","방해: 해지 버튼 의도적 숨김"]},SN:{s:91,i:["드립 프라이싱: 멤버십 비용 작은 글씨 숨김","실제 청구: 19,800+7,890=27,690원 불일치","자동결제 함정: 무료체험 후 자동 과금"]},II:{s:78,i:["동의 기본 체크—사실상 강제 동의","거부 버튼 최소화: 시각적 숨김","자동 결제 안내 9pt 초소형 숨김"]},SE:{s:85,i:["소셜 프루프: 긍정 후기만 선별","인위적 긴급성: 검증 불가 허위 긴급성","컨펌 쉐이밍: 거부를 손해 프레이밍"]}};
+      const x=d[type];
+      return React.createElement("div",{style:{position:"absolute",inset:0,background:"rgba(0,0,0,0.6)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:100,padding:24}},
+        React.createElement("div",{style:{background:"#fff",borderRadius:16,padding:24,width:"100%",maxWidth:340}},
+          React.createElement("p",{style:{fontSize:13,fontWeight:700,color:"#DC2626"}},"⚠️ "+TN[type].ko+" 위험 점수"),
+          React.createElement("p",{style:{fontSize:32,fontWeight:800,color:"#DC2626",margin:"4px 0 16px"}},x.s+"/100"),
+          React.createElement("div",{style:{background:"#FEF2F2",borderRadius:10,padding:14,marginBottom:16}},
+            React.createElement("p",{style:{fontSize:12,fontWeight:600,color:"#991B1B",marginBottom:8}},"감지된 문제:"),
+            x.i.map((t,i)=>React.createElement("p",{key:i,style:{fontSize:12,color:"#555",lineHeight:1.6,marginBottom:6}},"• "+t))),
+          React.createElement("button",{onClick:onClose,style:{background:"#DC2626",color:"#fff",border:"none",borderRadius:8,padding:"14px 0",fontSize:15,fontWeight:700,cursor:"pointer",width:"100%"}},"확인하고 계속하기")));
+    }
 
-function IIScreen({label,onA,tr}){
-  const[c1,s1]=useState(true);const[c2,s2]=useState(true);
-  return React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column"}},
-    React.createElement(Banner,{label,type:"II",onD:()=>{tr("label_detail");onA("openDetail");}}),
-    React.createElement("div",{style:{background:"#1A3A6B",padding:"20px 24px",textAlign:"center"}},
-      React.createElement("h2",{style:{fontSize:22,fontWeight:700,color:"#FFD700",margin:"0 0 6px"}},"Yes! 멤버십"),
-      React.createElement("p",{style:{fontSize:14,color:"#fff"}},"무료배송 · 무료반품 · 바른도착")),
-    React.createElement("div",{style:{padding:"20px 24px",flex:1,display:"flex",flexDirection:"column"}},
-      React.createElement("div",{style:{background:"#EFF6FF",borderRadius:8,padding:"10px 16px",textAlign:"center",marginBottom:16,fontSize:14,color:"#1E40AF",fontWeight:600}},"지금 30일 무료체험 후 월 7,890원"),
-      React.createElement("label",{onClick:()=>{s1(!c1);tr("chk_mkt");},style:{display:"flex",alignItems:"center",gap:10,marginBottom:10,cursor:"pointer"}},
-        React.createElement("span",{style:{width:22,height:22,borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",background:c1?"#3B82F6":"#fff",border:c1?"none":"2px solid #D1D5DB",color:"#fff",fontSize:14,flexShrink:0}},c1?"✓":""),
-        React.createElement("span",{style:{fontSize:13,color:"#6B7280"}},"마케팅 정보 수신 및 개인정보 제3자 제공 동의 (선택)")),
-      React.createElement("label",{onClick:()=>{s2(!c2);tr("chk_sms");},style:{display:"flex",alignItems:"center",gap:10,marginBottom:10,cursor:"pointer"}},
-        React.createElement("span",{style:{width:22,height:22,borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",background:c2?"#3B82F6":"#fff",border:c2?"none":"2px solid #D1D5DB",color:"#fff",fontSize:14,flexShrink:0}},c2?"✓":""),
-        React.createElement("span",{style:{fontSize:13,color:"#6B7280"}},"C커머스 이메일/SMS 광고성 정보 수신 동의 (선택)")),
-      React.createElement("button",{onClick:()=>{tr("freetrial_cta");onA("next");},style:{...ob,marginTop:12}},"무료체험 시작하기 >"),
-      React.createElement("button",{onClick:()=>{tr("later_benefit");onA("next");},style:gh},"나중에 혜택받기"),
-      React.createElement("p",{style:{fontSize:9,color:"#D1D5DB",textAlign:"center",marginTop:4,lineHeight:1.5}},"• 무료체험 종료 후 자동으로 월 7,890원이 결제됩니다"),
-      React.createElement(Tags,{label,type:"II"})));
-}
+    // ====== BUTTONS ======
+    const bb={background:"#1A3A6B",color:"#fff",border:"none",borderRadius:8,padding:"15px 0",fontSize:16,fontWeight:700,cursor:"pointer",width:"100%",marginTop:8};
+    const gb={background:"#F3F4F6",color:"#9CA3AF",border:"none",borderRadius:8,padding:"14px 0",fontSize:14,cursor:"pointer",width:"100%",marginTop:6};
+    const ob={background:"rgba(245,158,11,0.7)",color:"#fff",border:"none",borderRadius:8,padding:"15px 0",fontSize:16,fontWeight:700,cursor:"pointer",width:"100%"};
+    const rb2={background:"rgba(220,38,38,0.7)",border:"none",borderRadius:8,padding:"15px 0",fontSize:16,fontWeight:700,cursor:"pointer",width:"100%"};
+    const gh={background:"transparent",color:"#9CA3AF",border:"none",padding:"12px 0",fontSize:13,cursor:"pointer",width:"100%",textAlign:"center"};
 
-function SEScreen({label,onA,tr}){
-  const rv=[{t:"C커머스 Yes! 멤버십을 알게된 후 집에서 손가락 하나로 다음날이면 배송을 고를 수 있어서 얼마나 편리한지 몰라요",d:"2022.08.31"},{t:"Yes! 멤버십 할인까지 받아 저렴하게 구입하고 배송도 하루만에 받았는데 상품 상태도 너무 좋았어요",d:"2022.08.21"},{t:"사이즈 맞으면 어떨한 고민했는데 무료교환 덕분에 큰 고민 없이 주문한 것 같아요",d:"2022.08.15"}];
-  return React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column"}},
-    React.createElement(Banner,{label,type:"SE",onD:()=>{tr("label_detail");onA("openDetail");}}),
-    React.createElement("div",{style:{background:"#1A3A6B",padding:"14px 24px",textAlign:"center"}},
-      React.createElement("h2",{style:{fontSize:22,fontWeight:700,color:"#FFD700",margin:"0 0 4px"}},"Yes! 멤버십"),
-      React.createElement("p",{style:{fontSize:13,color:"rgba(255,255,255,0.9)"}},"Yes! 멤버십 회원들의 생생한 이용 후기")),
-    React.createElement("div",{style:{padding:"14px 24px",flex:1,display:"flex",flexDirection:"column"}},
-      rv.map((r,i)=>React.createElement("div",{key:i,style:{marginBottom:10,paddingBottom:10,borderBottom:"1px solid #F3F4F6"}},
-        React.createElement("p",{style:{fontSize:13,color:"#333",lineHeight:1.5}},r.t),
-        React.createElement("div",{style:{display:"flex",gap:8,marginTop:4}},React.createElement("span",{style:{color:"#F59E0B",fontSize:11}},"★★★★★"),React.createElement("span",{style:{fontSize:11,color:"#D1D5DB"}},r.d)))),
-      React.createElement(Tags,{label,type:"SE"}),
-      React.createElement("div",{style:{background:"#FFF8E7",borderRadius:12,padding:14,textAlign:"center",marginTop:8,marginBottom:12}},
-        React.createElement("p",{style:{fontSize:13,color:"#D97706",fontWeight:600}},"⏰ 오늘만! 첫달 무료 혜택 마감까지"),
-        React.createElement("p",{style:{fontSize:26,fontWeight:700,color:"#DC2626",margin:"4px 0"}},"00:47:33 남음"),
-        React.createElement("p",{style:{fontSize:12,color:"#D97706"}},"현재 847명이 이 혜택을 보고 있습니다")),
-      React.createElement("button",{onClick:()=>{tr("subscribe_cta");onA("next");},style:ob},"결제하고 시작하기 >"),
-      React.createElement("p",{style:{fontSize:10,color:"#D1D5DB",textAlign:"center",marginTop:4}},"가입 시 월 7,890원 결제에 동의합니다."),
-      React.createElement("button",{onClick:()=>{tr("later_se");onA("next");},style:gh},"나중에 혜택받기")));
-}
+    // ====== TASK SCREENS ======
+    function FAScreen({label,onA,tr}){
+      return React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column"}},
+        React.createElement(Banner,{label,type:"FA",onD:()=>{tr("label_detail");onA("openDetail");}}),
+        React.createElement("div",{style:{background:"#FFF8E7",padding:"10px 20px",textAlign:"center"}},React.createElement("span",{style:{color:"#D97706",fontSize:13}},"8월 10일부터 Yes! 멤버십 월회비가 7,890원으로 변경됩니다")),
+        React.createElement("div",{style:{padding:"20px 24px",flex:1,display:"flex",flexDirection:"column"}},
+          React.createElement("h2",{style:{fontSize:20,fontWeight:700,textAlign:"center",margin:0,color:"#111"}},"변경에 동의하고"),
+          React.createElement("h2",{style:{fontSize:20,fontWeight:700,textAlign:"center",margin:"0 0 16px",color:"#111"}},"멤버십 혜택을 계속 받아보세요"),
+          React.createElement("div",{style:{background:"#F9FAFB",borderRadius:12,padding:16,marginBottom:12}},
+            React.createElement("p",{style:{fontSize:14,fontWeight:600,textAlign:"center",marginBottom:10,color:"#333"}},"C커머스 쇼핑 혜택"),
+            React.createElement("div",{style:{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:"8px 16px",fontSize:13,color:"#555"}},["🚚 무료배송","📦 무료반품","⚡ 바른도착","🏷 Yes! 멤버십할인","🛒 식품구매","💳 Yes! 멤버십카드"].map(b=>React.createElement("span",{key:b},b)))),
+          React.createElement("div",{style:{background:"#E8F5E9",borderRadius:8,padding:8,textAlign:"center",marginBottom:12,fontSize:13,color:"#2E7D32"}},"동의 후에도 해지 가능"),
+          React.createElement("button",{onClick:()=>{tr("agree_cta");onA("next");},style:bb},"동의하고 혜택 계속 받기 >"),
+          React.createElement("button",{onClick:()=>{tr("later_btn");onA("next");},style:gb},"나중에 하기"),
+          React.createElement("p",{style:{fontSize:9,color:"#C0C0C0",textAlign:"center",marginTop:10,lineHeight:1.5}},"• 월회비 변경에 동의하면 8월 10일부터 7,890원이 결제됩니다."),
+          React.createElement(Tags,{label,type:"FA"})));
+    }
 
-function Decision({type,onD,tr}){
-  const c={FA:{t:"월회비 변경 최종 확인",d:"C커머스 Yes! 멤버십 멤버십 월회비 7,890원 변경에 대한 최종 선택을 해주세요.",o:[{l:"동의하고 혜택 계속 받기 >",v:"agree",g:false},{l:"나중에 하기",v:"refuse",g:true}]},OB:{t:"해지 최종 확인",d:"해지를 완료하면 멤버십이 해지되어 혜택이 종료됩니다.",o:[{l:"멤버십 유지하기",v:"keep",g:false},{l:"해지하기",v:"cancel",g:true}]},SN:{t:"결제 최종 확인",d:"아래 주문 내역을 확인하고 결제를 진행하세요.",o:[{l:"27,690원 결제하기",v:"pay",g:false},{l:"취소",v:"cancel_pay",g:true}]},II:{t:"무료체험 신청",d:"지금 무료체험을 신청하면 즉시 Yes! 멤버십 혜택을 이용할 수 있습니다.",o:[{l:"무료체험 시작하기 >",v:"start",g:false},{l:"나중에 혜택받기",v:"skip",g:true}]},SE:{t:"멤버십 가입 확인",d:"지금 확인하고 Yes! 멤버십 멤버십에 가입하시겠습니까?",o:[{l:"결제하고 시작하기 >",v:"sub",g:false},{l:"나중에 혜택받기",v:"skip_sub",g:true}]}};
-  const x=c[type];
-  return React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column"}},
-    React.createElement("div",{style:{background:"#DC2626",borderRadius:8,padding:"8px 14px",marginBottom:16,textAlign:"center"}},React.createElement("span",{style:{color:"#fff",fontSize:13,fontWeight:600}},"결정")),
-    React.createElement("h2",{style:{fontSize:17,fontWeight:700,marginBottom:8,color:"#111"}},x.t),
-    React.createElement("p",{style:{fontSize:13,color:"#6B7280",marginBottom:20,lineHeight:1.5}},x.d),
-    x.o.map((o,i)=>React.createElement("button",{key:i,onClick:()=>{tr("dec_"+o.v);onD(o.v,o.g);},style:i===0?{...bb,marginTop:4}:{...gb}},o.l)));
-}
+    function OBScreen({label,onA,tr}){
+      const[s,setS]=React.useState(null);
+      const r=["월회비가 비쌈","할인 혜택이 적음","최근 쇼핑 횟수가 줄었음","무료배송, 빠른 배송이 불필요함","기타"];
+      return React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column"}},
+        React.createElement(Banner,{label,type:"OB",onD:()=>{tr("label_detail");onA("openDetail");}}),
+        React.createElement("div",{style:{padding:"20px 24px",flex:1,display:"flex",flexDirection:"column"}},
+          React.createElement("h2",{style:{fontSize:17,fontWeight:700,textAlign:"center",marginBottom:4,color:"#111"}},"Yes! 멤버십 멤버십 해지 신청"),
+          React.createElement("p",{style:{fontSize:15,fontWeight:600,textAlign:"center",marginBottom:16,color:"#333"}},"서비스 개선을 위해 해지하는 이유를 알려주세요"),
+          r.map((x,i)=>React.createElement("button",{key:i,onClick:()=>{setS(i);tr("reason_select");},style:{display:"flex",alignItems:"center",gap:12,background:s===i?"#EFF6FF":"#F9FAFB",border:s===i?"1.5px solid #3B82F6":"1.5px solid #E5E7EB",borderRadius:10,padding:"13px 14px",marginBottom:7,cursor:"pointer",width:"100%",textAlign:"left",fontSize:14,color:"#333"}},
+            React.createElement("span",{style:{width:18,height:18,borderRadius:"50%",border:s===i?"5px solid #3B82F6":"2px solid #D1D5DB",flexShrink:0}}),x)),
+          React.createElement("button",{onClick:()=>{tr("keep_cta");onA("next");},style:{...bb,marginTop:12}},"멤버십 유지하기"),
+          React.createElement("button",{onClick:()=>{tr("cancel_btn");onA("next");},style:gb},"해지하기"),
+          React.createElement(Tags,{label,type:"OB"})));
+    }
 
-// ====== MAIN APP ======
-function App(){
-  const[ph,setPh]=useState("intro");
-  const[curSeq,setCurSeq]=useState(null);
-  const[ti,setTI]=useState(0);
-  const[tp,setTP]=useState("exposure");
-  const[pop,setPop]=useState(false);
-  const[dm,setDM]=useState({age:"",gender:"",occupation:"",education:"",commerceYears:"",commerceFreq:""});
-  const[ms,setMS]=useState({});
-  const[ps,setPS]=useState({});
-  const[taskData,setTaskData]=useState([]);
-  const[pid]=useState(()=>"P"+Date.now().toString(36).toUpperCase());
-  const[phone,setPhone]=useState("");
-  const[quotas,setQuotas]=useState(getQuotas());
-  const[sending,setSending]=useState(false);
-
-  const tsRef=useRef(null),clRef=useRef([]),ecRef=useRef(0),lcRef=useRef(false),ldRef=useRef({v:"",g:false});
-
-  const curTask = curSeq ? curSeq.tasks[ti] : null;
-  const curType = curTask ? curTask.type : null;
-  const curLabel = curTask ? curTask.label : null;
-  const step = ph==="intro"?0:ph==="consent"?1:ph==="demographics"?2:ph==="instruction"?3:ph==="task"?4+ti:ph==="postSurvey"?9:10;
-
-  const tr=useCallback(t=>{clRef.current.push({type:t,ts:Date.now()});if(t==="label_detail")lcRef.current=true;if(["agree_cta","keep_cta","pay_cta","freetrial_cta","subscribe_cta"].includes(t))ecRef.current++;},[]);
-  const startT=useCallback(()=>{tsRef.current=Date.now();clRef.current=[];ecRef.current=0;lcRef.current=false;},[]);
-  const saveT=useCallback(()=>{
-    const time=((Date.now()-tsRef.current)/1000).toFixed(2);
-    const task=curSeq.tasks[ti];
-    setTaskData(p=>[...p,{
-      participantId:pid,sequenceId:curSeq.id,taskOrder:ti+1,
-      taskType:task.type,taskTypeName:TN[task.type].en,labelLevel:task.label,
-      taskCompletionTimeSec:parseFloat(time),clickCount:clRef.current.length,
-      errorClickCount:ecRef.current,goalSuccess:ldRef.current.g?1:0,
-      labelClick:lcRef.current?1:0,decision:ldRef.current.v,
-      manipulationAwareness:ms[task.type]||"",timestamp:new Date().toISOString()
-    }]);
-  },[pid,curSeq,ti,ms]);
-
-  const doAssign=()=>{const s=assignSequence();setCurSeq(s);const newQ=incSeq(s.id);setQuotas(newQ);};
-  const nextTask=()=>{if(ti<4){setTI(p=>p+1);setTP("exposure");setPop(false);startT();}else setPh("postSurvey");};
-  const hA=a=>{if(a==="openDetail"){setPop(true);return;}setTP("decision");};
-  const hD=(v,g)=>{ldRef.current={v,g};setTP("survey");};
-  const hM=v=>{setMS(p=>({...p,[curType]:v}));};
-  const submitSurvey=()=>{saveT();nextTask();};
-
-  const finishExperiment=async()=>{
-    setSending(true);
-    const payload={participantId:pid,sequenceId:curSeq.id,demographics:dm,postSurvey:ps,phone,tasks:taskData,completedAt:new Date().toISOString()};
-    await saveResult(payload);
-    setSending(false);
-    // Full reset
-    setPh("intro");setCurSeq(null);setTI(0);setTP("exposure");setPop(false);
-    setDM({age:"",gender:"",occupation:"",education:"",commerceYears:"",commerceFreq:""});
-    setMS({});setPS({});setTaskData([]);setPhone("");setQuotas(getQuotas());
-  };
-
-  const SC={FA:FAScreen,OB:OBScreen,SN:SNScreen,II:IIScreen,SE:SEScreen};
-
-  // Sequence display helper
-  const seqLabel=(s)=>s.tasks.map(t=>t.label+" "+t.type).join(" → ");
-
-  return React.createElement("div",null,
-    React.createElement(Phone,{step,total:10,showBar:!["intro","finish"].includes(ph)},
-
-      // === INTRO ===
-      ph==="intro"&&React.createElement("div",{style:{padding:"24px 20px",flex:1,display:"flex",flexDirection:"column"}},
-        React.createElement("div",{style:{textAlign:"center",marginBottom:18}},
-          React.createElement("div",{style:{width:64,height:64,borderRadius:16,background:"linear-gradient(135deg,#3B82F6,#6366F1)",margin:"0 auto 12px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28}},"🔍"),
-          React.createElement("h1",{style:{fontSize:20,fontWeight:800,color:"#111",lineHeight:1.3}},"모바일 커머스 앱 다크패턴 라벨링",React.createElement("br"),"사용성 평가"),
-          React.createElement("p",{style:{fontSize:11,color:"#9CA3AF",marginTop:4}},"Mobile e-commerce app dark pattern labeling and its effects on differences in user perception")),
-        React.createElement("div",{style:{background:"#F9FAFB",borderRadius:10,padding:14,marginBottom:12,fontSize:12,color:"#555",lineHeight:1.7}},
-          React.createElement("p",{style:{marginBottom:6}},"본 연구는 모바일 커머스 앱 다크패턴 라벨링에 따른 사용자 인지 차이를 평가하기 위한 실험입니다."),
-          React.createElement("p",null,"실험은 약 15~20분 소요되며, 5개의 모바일 화면을 살펴본 후 간단한 설문에 응답합니다.")),
-        React.createElement("div",{style:{background:"#F0F9FF",borderRadius:10,padding:12,marginBottom:12,border:"1px solid #BAE6FD"}},
-          React.createElement("p",{style:{fontSize:11,fontWeight:700,color:"#0369A1",marginBottom:8}},"📊 실험 참여 현황 (랜덤 배정)"),
-          SEQUENCES.map(s=>{
-            const c=getSeqCount(quotas,s.id);
-            return React.createElement("div",{key:s.id,style:{padding:"6px 0",borderBottom:s.id<5?"1px solid #E0F2FE":"none",fontSize:10,color:"#334155",lineHeight:1.5}},
-              React.createElement("span",{style:{fontWeight:700,color:c>=MAX_PER_SEQ?"#DC2626":"#0369A1",marginRight:6}},c+"/"+MAX_PER_SEQ),
-              "S"+s.id+"(",s.tasks.map(t=>t.label+" "+t.type).join(" → "),")");
-          })),
-        React.createElement("p",{style:{fontSize:10,color:"#9CA3AF",textAlign:"center",marginBottom:10}},"상명대학교 대학원 경영학과 (MIS)",React.createElement("br"),"연구자: 조성진 | 지도교수: 유진호"),
-        React.createElement("div",{style:{flex:1}}),
-        React.createElement("button",{onClick:()=>setPh("consent"),style:{...bb,background:"linear-gradient(135deg,#3B82F6,#6366F1)"}},"실험 시작하기")),
-
-      // === CONSENT ===
-      ph==="consent"&&React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column"}},
-        React.createElement("h2",{style:{fontSize:18,fontWeight:700,marginBottom:14,color:"#111"}},"📋 연구 참여 동의서"),
-        React.createElement("div",{style:{background:"#F9FAFB",borderRadius:10,padding:16,fontSize:12,color:"#555",lineHeight:1.7,flex:1,overflowY:"auto"}},
-          [{t:"1. 연구 목적",d:"본 연구는 모바일 커머스 앱 다크패턴 라벨링에 따른 사용자 인지 차이를 평가하기 위한 실험입니다."},{t:"2. 참여 절차",d:"5개의 모바일 화면을 살펴보고, 각 화면에 대한 의사결정 및 설문응답을 수행합니다. 총 소요시간은 약 15~20분입니다."},{t:"3. 데이터 수집",d:"화면 조작 시간, 클릭 횟수, 의사결정 결과, 설문 응답이 수집됩니다. 모든 데이터는 익명으로 처리되며, 연구 목적으로만 사용됩니다."},{t:"4. 참여자 권리",d:"참여는 자발적이며, 언제든지 중단할 수 있습니다."},{t:"5. 개인정보 보호",d:"수집된 데이터는 연구 완료 후 3년간 보관 후 폐기됩니다."}].map((s,i)=>React.createElement("div",{key:i,style:{marginBottom:12}},React.createElement("p",{style:{fontWeight:600,color:"#333",marginBottom:4}},s.t),React.createElement("p",null,s.d)))),
-        React.createElement("button",{onClick:()=>{doAssign();setPh("demographics");},style:{...bb,marginTop:16}},"동의하고 계속하기")),
-
-      // === DEMOGRAPHICS (FIXED SIZE) ===
-      ph==="demographics"&&React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column",overflowY:"auto"}},
-        React.createElement("h2",{style:{fontSize:18,fontWeight:700,marginBottom:14,color:"#111"}},"👤 기본 정보"),
-        [{k:"age",l:"나이",o:["20대","30대","40대","50대","60대 이상"]},{k:"gender",l:"성별",o:["남성","여성","기타","응답하지 않음"]},{k:"occupation",l:"직업",o:["학생","직장인","자영업","전문직","주부","무직/기타"]},{k:"education",l:"최종 학력",o:["고등학교 졸업","대학교 재학/졸업","대학원 재학/졸업"]},{k:"commerceYears",l:"모바일 커머스 앱 이용 기간",o:["1년 미만","1~3년","3~5년","5년 이상"]},{k:"commerceFreq",l:"모바일 커머스 앱 사용 빈도",o:["거의 안함","1~2회/주","3~5회/주","매일"]}].map(({k,l,o})=>React.createElement("div",{key:k,style:{marginBottom:12}},
-          React.createElement("label",{style:{fontSize:13,fontWeight:600,color:"#333",display:"block",marginBottom:4}},l),
-          React.createElement("select",{value:dm[k],onChange:e=>setDM(p=>({...p,[k]:e.target.value})),style:{width:"100%",padding:"11px 12px",borderRadius:8,border:"1.5px solid #E5E7EB",fontSize:14,background:"#fff",color:dm[k]?"#111":"#9CA3AF"}},
-            React.createElement("option",{value:""},"선택해주세요"),o.map(v=>React.createElement("option",{key:v,value:v},v))))),
-        React.createElement("div",{style:{flex:1,minHeight:12}}),
-        React.createElement("button",{onClick:()=>setPh("instruction"),disabled:!dm.age||!dm.gender,style:{...bb,opacity:(!dm.age||!dm.gender)?0.4:1}},"다음")),
-
-      // === INSTRUCTION ===
-      ph==="instruction"&&React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column",justifyContent:"center"}},
-        React.createElement("div",{style:{background:"#EFF6FF",borderRadius:14,padding:22,marginBottom:16}},
-          React.createElement("h2",{style:{fontSize:16,fontWeight:700,marginBottom:14,color:"#1E40AF"}},"📱 실험 안내"),
-          ["1. 총 5개의 모바일 화면이 순서대로 제시됩니다.","2. 각 화면을 살펴본 후, 최종 의사결정을 선택해주세요.","3. 의사결정 후 간단한 1문항 설문에 응답합니다.","4. 5개 태스크 완료 후 전체 설문(3문항)에 응답합니다.","💡 정답은 없습니다. 평소처럼 자연스럽게 사용해주세요."].map((t,i)=>React.createElement("p",{key:i,style:{fontSize:13,color:"#444",lineHeight:1.7,marginBottom:8}},t))),
-        React.createElement("div",{style:{background:"#FEFCE8",borderRadius:10,padding:12,fontSize:12,color:"#854D0E"}},"⏱ 각 화면에서의 조작 시간과 클릭이 자동으로 기록됩니다."),
-        React.createElement("div",{style:{flex:1}}),
-        React.createElement("button",{onClick:()=>{setPh("task");startT();},style:{...bb,background:"linear-gradient(135deg,#3B82F6,#6366F1)"}},"태스크 시작 →")),
-
-      // === TASK ===
-      ph==="task"&&curType&&React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column",position:"relative"}},
-        React.createElement("div",{style:{background:"#F9FAFB",padding:"8px 16px",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:"1px solid #F3F4F6",flexShrink:0}},
-          React.createElement("span",{style:{fontSize:12,color:"#9CA3AF"}},"태스크 "+(ti+1)+"/5"),
-          React.createElement("span",{style:{background:"#EFF6FF",color:"#3B82F6",padding:"2px 10px",borderRadius:20,fontWeight:600,fontSize:11}},TN[curType].ko)),
-        tp==="exposure"&&React.createElement(SC[curType],{label:curLabel,onA:hA,tr}),
-        tp==="decision"&&React.createElement(Decision,{type:curType,onD:hD,tr}),
-        tp==="survey"&&React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column"}},
-          React.createElement("div",{style:{background:"#F0FDF4",borderRadius:10,padding:12,textAlign:"center",marginBottom:16}},React.createElement("span",{style:{fontSize:18}},"✅"),React.createElement("p",{style:{fontSize:14,fontWeight:600,color:"#166534",marginTop:2}},"태스크 "+(ti+1)+" 완료")),
-          React.createElement(Likert,{q:MQ,v:ms[curType],onChange:hM}),
+    function SNScreen({label,onA,tr}){
+      return React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column"}},
+        React.createElement(Banner,{label,type:"SN",onD:()=>{tr("label_detail");onA("openDetail");}}),
+        React.createElement("div",{style:{padding:"20px 24px",flex:1,display:"flex",flexDirection:"column"}},
+          React.createElement("h2",{style:{fontSize:17,fontWeight:700,textAlign:"center",marginBottom:16,color:"#111"}},"주문 확인"),
+          React.createElement("div",{style:{display:"flex",gap:12,padding:14,background:"#F9FAFB",borderRadius:10,marginBottom:16}},
+            React.createElement("div",{style:{width:64,height:64,background:"#E5E7EB",borderRadius:8,flexShrink:0}}),
+            React.createElement("div",null,
+              React.createElement("p",{style:{fontSize:14,fontWeight:600,color:"#111"}},"닥터지 레드 블레미쉬 클리어 수딩 크림"),
+              React.createElement("p",{style:{fontSize:12,color:"#9CA3AF"}},"50ml / 수량: 1개"),
+              React.createElement("p",{style:{fontSize:16,fontWeight:700,color:"#111",marginTop:4}},"19,800원"))),
+          React.createElement(Tags,{label,type:"SN"}),
+          React.createElement("div",{style:{borderTop:"1px solid #F3F4F6",paddingTop:16,marginTop:12}},
+            React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:14}},React.createElement("span",{style:{color:"#6B7280"}},"상품 금액"),React.createElement("span",{style:{fontWeight:600,color:"#111"}},"19,800원")),
+            React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:6,fontSize:14}},React.createElement("span",{style:{color:"#6B7280"}},"배송비"),React.createElement("span",{style:{fontWeight:600,color:"#3B82F6"}},"무료")),
+            React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:10,fontSize:11}},React.createElement("span",{style:{color:"#D1D5DB"}},"Yes! 멤버십 멤버십 월정액"),React.createElement("span",{style:{color:"#D1D5DB"}},"7,890원")),
+            React.createElement("div",{style:{borderTop:"2px solid #111",paddingTop:10,display:"flex",justifyContent:"space-between"}},React.createElement("span",{style:{fontSize:16,fontWeight:700}},"결제 예정금액"),React.createElement("span",{style:{fontSize:18,fontWeight:700,color:"#DC2626"}},"27,690원"))),
           React.createElement("div",{style:{flex:1}}),
-          React.createElement("button",{onClick:submitSurvey,disabled:!ms[curType],style:{...bb,opacity:ms[curType]?1:0.4}},ti<4?"다음 태스크 →":"전체 설문으로 →")),
-        pop&&React.createElement(Popup,{type:curType,onClose:()=>setPop(false)})),
+          React.createElement("button",{onClick:()=>{tr("pay_cta");onA("next");},style:rb2},"27,690원 결제하기"),
+          React.createElement("button",{onClick:()=>{tr("cancel_pay");onA("next");},style:gh},"취소")));
+    }
 
-      // === POST SURVEY ===
-      ph==="postSurvey"&&React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column"}},
-        React.createElement("h2",{style:{fontSize:18,fontWeight:700,marginBottom:4,color:"#111"}},"📝 전체 평가 설문"),
-        React.createElement("p",{style:{fontSize:12,color:"#9CA3AF",marginBottom:16}},"전체 실험 경험에 대해 평가해주세요."),
-        POST_ITEMS.map(item=>React.createElement(Likert,{key:item.id,q:item.text,v:ps[item.id],onChange:v=>setPS(p=>({...p,[item.id]:v}))})),
-        React.createElement("div",{style:{flex:1}}),
-        React.createElement("button",{onClick:()=>setPh("finish"),disabled:!ps.fairness||!ps.transparency||!ps.trust,style:{...bb,opacity:(ps.fairness&&ps.transparency&&ps.trust)?1:0.4}},"제출하기")),
+    function IIScreen({label,onA,tr}){
+      const[c1,s1]=React.useState(true);const[c2,s2]=React.useState(true);
+      return React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column"}},
+        React.createElement(Banner,{label,type:"II",onD:()=>{tr("label_detail");onA("openDetail");}}),
+        React.createElement("div",{style:{background:"#1A3A6B",padding:"20px 24px",textAlign:"center"}},
+          React.createElement("h2",{style:{fontSize:22,fontWeight:700,color:"#FFD700",margin:"0 0 6px"}},"Yes! 멤버십"),
+          React.createElement("p",{style:{fontSize:14,color:"#fff"}},"무료배송 · 무료반품 · 바른도착")),
+        React.createElement("div",{style:{padding:"20px 24px",flex:1,display:"flex",flexDirection:"column"}},
+          React.createElement("div",{style:{background:"#EFF6FF",borderRadius:8,padding:"10px 16px",textAlign:"center",marginBottom:16,fontSize:14,color:"#1E40AF",fontWeight:600}},"지금 30일 무료체험 후 월 7,890원"),
+          React.createElement("label",{onClick:()=>{s1(!c1);tr("chk_mkt");},style:{display:"flex",alignItems:"center",gap:10,marginBottom:10,cursor:"pointer"}},
+            React.createElement("span",{style:{width:22,height:22,borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",background:c1?"#3B82F6":"#fff",border:c1?"none":"2px solid #D1D5DB",color:"#fff",fontSize:14,flexShrink:0}},c1?"✓":""),
+            React.createElement("span",{style:{fontSize:13,color:"#6B7280"}},"마케팅 정보 수신 및 개인정보 제3자 제공 동의 (선택)")),
+          React.createElement("label",{onClick:()=>{s2(!c2);tr("chk_sms");},style:{display:"flex",alignItems:"center",gap:10,marginBottom:10,cursor:"pointer"}},
+            React.createElement("span",{style:{width:22,height:22,borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",background:c2?"#3B82F6":"#fff",border:c2?"none":"2px solid #D1D5DB",color:"#fff",fontSize:14,flexShrink:0}},c2?"✓":""),
+            React.createElement("span",{style:{fontSize:13,color:"#6B7280"}},"C커머스 이메일/SMS 광고성 정보 수신 동의 (선택)")),
+          React.createElement("button",{onClick:()=>{tr("freetrial_cta");onA("next");},style:{...ob,marginTop:12}},"무료체험 시작하기 >"),
+          React.createElement("button",{onClick:()=>{tr("later_benefit");onA("next");},style:gh},"나중에 혜택받기"),
+          React.createElement("p",{style:{fontSize:9,color:"#D1D5DB",textAlign:"center",marginTop:4,lineHeight:1.5}},"• 무료체험 종료 후 자동으로 월 7,890원이 결제됩니다"),
+          React.createElement(Tags,{label,type:"II"})));
+    }
 
-      // === FINISH ===
-      ph==="finish"&&React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column"}},
-        React.createElement("div",{style:{textAlign:"center",marginBottom:16}},
-          React.createElement("div",{style:{width:56,height:56,borderRadius:"50%",background:"linear-gradient(135deg,#10B981,#34D399)",margin:"0 auto 10px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24}},"🎉"),
-          React.createElement("h2",{style:{fontSize:18,fontWeight:700,color:"#111"}},"실험이 완료되었습니다!"),
-          React.createElement("p",{style:{fontSize:13,color:"#6B7280",marginTop:4}},"참여해주셔서 감사합니다.")),
-        React.createElement("div",{style:{background:"#FEFCE8",borderRadius:12,padding:14,marginBottom:12,fontSize:11,color:"#854D0E",lineHeight:1.7}},
-          React.createElement("p",{style:{fontWeight:600,marginBottom:6}},"📢 디브리핑"),
-          React.createElement("p",null,'본 연구는 모바일 커머스 앱 다크패턴 라벨링에 따른 사용자 인지 차이를 평가하기 위한 실험이었습니다. 실험에서 보신 화면들은 실제 서비스를 모사한 프로토타입이며, 실제 결제나 가입이 이루어지지 않았습니다.')),
-        React.createElement("div",{style:{background:"#F0FDF4",borderRadius:12,padding:16,marginBottom:12,border:"1px solid #BBF7D0"}},
-          React.createElement("p",{style:{fontSize:12,fontWeight:600,color:"#166534",marginBottom:8}},"🎁 답례품 안내"),
-          React.createElement("p",{style:{fontSize:11,color:"#555",lineHeight:1.7,marginBottom:12}},"연구에선 실험참여자 분들을 대상으로 100% 당첨 랜덤 답례품을 드릴 목적으로 전화번호를 수집합니다. 실험자 전화번호는 랜덤 답례품 증정 후 즉시 파기하고 제3자에게 노출되지 않음을 밝힙니다."),
-          React.createElement("label",{style:{fontSize:12,fontWeight:600,color:"#333",display:"block",marginBottom:6}},"전화번호"),
-          React.createElement("input",{type:"tel",value:phone,onChange:e=>setPhone(e.target.value),placeholder:"010-0000-0000",style:{width:"100%",padding:"12px 14px",borderRadius:8,border:"1.5px solid #D1D5DB",fontSize:15,background:"#fff",textAlign:"center",letterSpacing:1}})),
-        React.createElement("div",{style:{flex:1}}),
-        React.createElement("button",{onClick:finishExperiment,disabled:sending,style:{...bb,background:sending?"#9CA3AF":"linear-gradient(135deg,#DC2626,#B91C1C)"}},sending?"저장 중...":"실험 종료"))),
+    function SEScreen({label,onA,tr}){
+      const rv=[{t:"C커머스 Yes! 멤버십을 알게된 후 집에서 손가락 하나로 다음날이면 배송을 고를 수 있어서 얼마나 편리한지 몰라요",d:"2022.08.31"},{t:"Yes! 멤버십 할인까지 받아 저렴하게 구입하고 배송도 하루만에 받았는데 상품 상태도 너무 좋았어요",d:"2022.08.21"},{t:"사이즈 맞으면 어떨한 고민했는데 무료교환 덕분에 큰 고민 없이 주문한 것 같아요",d:"2022.08.15"}];
+      return React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column"}},
+        React.createElement(Banner,{label,type:"SE",onD:()=>{tr("label_detail");onA("openDetail");}}),
+        React.createElement("div",{style:{background:"#1A3A6B",padding:"14px 24px",textAlign:"center"}},
+          React.createElement("h2",{style:{fontSize:22,fontWeight:700,color:"#FFD700",margin:"0 0 4px"}},"Yes! 멤버십"),
+          React.createElement("p",{style:{fontSize:13,color:"rgba(255,255,255,0.9)"}},"Yes! 멤버십 회원들의 생생한 이용 후기")),
+        React.createElement("div",{style:{padding:"14px 24px",flex:1,display:"flex",flexDirection:"column"}},
+          rv.map((r,i)=>React.createElement("div",{key:i,style:{marginBottom:10,paddingBottom:10,borderBottom:"1px solid #F3F4F6"}},
+            React.createElement("p",{style:{fontSize:13,color:"#333",lineHeight:1.5}},r.t),
+            React.createElement("div",{style:{display:"flex",gap:8,marginTop:4}},React.createElement("span",{style:{color:"#F59E0B",fontSize:11}},"★★★★★"),React.createElement("span",{style:{fontSize:11,color:"#D1D5DB"}},r.d)))),
+          React.createElement(Tags,{label,type:"SE"}),
+          React.createElement("div",{style:{background:"#FFF8E7",borderRadius:12,padding:14,textAlign:"center",marginTop:8,marginBottom:12}},
+            React.createElement("p",{style:{fontSize:13,color:"#D97706",fontWeight:600}},"⏰ 오늘만! 첫달 무료 혜택 마감까지"),
+            React.createElement("p",{style:{fontSize:26,fontWeight:700,color:"#DC2626",margin:"4px 0"}},"00:47:33 남음"),
+            React.createElement("p",{style:{fontSize:12,color:"#D97706"}},"현재 847명이 이 혜택을 보고 있습니다")),
+          React.createElement("button",{onClick:()=>{tr("subscribe_cta");onA("next");},style:ob},"결제하고 시작하기 >"),
+          React.createElement("p",{style:{fontSize:10,color:"#D1D5DB",textAlign:"center",marginTop:4}},"가입 시 월 7,890원 결제에 동의합니다."),
+          React.createElement("button",{onClick:()=>{tr("later_se");onA("next");},style:gh},"나중에 혜택받기")));
+    }
 
-    React.createElement("p",{style:{marginTop:10,fontSize:9,color:"#9CA3AF",textAlign:"center"}},"상명대학교 대학원 | Study 4: Dark Pattern Labeling Usability Test"));
-}
+    function Decision({type,onD,tr}){
+      const c={FA:{t:"월회비 변경 최종 확인",d:"C커머스 Yes! 멤버십 멤버십 월회비 7,890원 변경에 대한 최종 선택을 해주세요.",o:[{l:"동의하고 혜택 계속 받기 >",v:"agree",g:false},{l:"나중에 하기",v:"refuse",g:true}]},OB:{t:"해지 최종 확인",d:"해지를 완료하면 멤버십이 해지되어 혜택이 종료됩니다.",o:[{l:"멤버십 유지하기",v:"keep",g:false},{l:"해지하기",v:"cancel",g:true}]},SN:{t:"결제 최종 확인",d:"아래 주문 내역을 확인하고 결제를 진행하세요.",o:[{l:"27,690원 결제하기",v:"pay",g:false},{l:"취소",v:"cancel_pay",g:true}]},II:{t:"무료체험 신청",d:"지금 무료체험을 신청하면 즉시 Yes! 멤버십 혜택을 이용할 수 있습니다.",o:[{l:"무료체험 시작하기 >",v:"start",g:false},{l:"나중에 혜택받기",v:"skip",g:true}]},SE:{t:"멤버십 가입 확인",d:"지금 확인하고 Yes! 멤버십 멤버십에 가입하시겠습니까?",o:[{l:"결제하고 시작하기 >",v:"sub",g:false},{l:"나중에 혜택받기",v:"skip_sub",g:true}]}};
+      const x=c[type];
+      return React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column"}},
+        React.createElement("div",{style:{background:"#DC2626",borderRadius:8,padding:"8px 14px",marginBottom:16,textAlign:"center"}},React.createElement("span",{style:{color:"#fff",fontSize:13,fontWeight:600}},"결정")),
+        React.createElement("h2",{style:{fontSize:17,fontWeight:700,marginBottom:8,color:"#111"}},x.t),
+        React.createElement("p",{style:{fontSize:13,color:"#6B7280",marginBottom:20,lineHeight:1.5}},x.d),
+        x.o.map((o,i)=>React.createElement("button",{key:i,onClick:()=>{tr("dec_"+o.v);onD(o.v,o.g);},style:i===0?{...bb,marginTop:4}:{...gb}},o.l)));
+    }
 
-const rootEl = document.getElementById("root");
-  if (ReactDOM.createRoot) {
-    ReactDOM.createRoot(rootEl).render(React.createElement(App));
-  } else {
-    ReactDOM.render(React.createElement(App), rootEl);
-  }
-</script>
+    // ====== MAIN APP ======
+    function App(){
+      const[ph,setPh]=React.useState("intro");
+      const[curSeq,setCurSeq]=React.useState(null);
+      const[ti,setTI]=React.useState(0);
+      const[tp,setTP]=React.useState("exposure");
+      const[pop,setPop]=React.useState(false);
+      const[dm,setDM]=React.useState({age:"",gender:"",occupation:"",education:"",commerceYears:"",commerceFreq:""});
+      const[ms,setMS]=React.useState({});
+      const[ps,setPS]=React.useState({});
+      const[taskData,setTaskData]=React.useState([]);
+      const[pid]=React.useState(()=>"P"+Date.now().toString(36).toUpperCase());
+      const[phone,setPhone]=React.useState("");
+      const[quotas,setQuotas]=React.useState(getQuotas());
+      const[sending,setSending]=React.useState(false);
+
+      const tsRef=React.useRef(null),clRef=React.useRef([]),ecRef=React.useRef(0),lcRef=React.useRef(false),ldRef=React.useRef({v:"",g:false});
+
+      const curTask = curSeq ? curSeq.tasks[ti] : null;
+      const curType = curTask ? curTask.type : null;
+      const curLabel = curTask ? curTask.label : null;
+
+      const step = ph==="intro"?0:ph==="consent"?1:ph==="demographics"?2:ph==="instruction"?3:ph==="task"?4+ti:ph==="postSurvey"?9:10;
+
+      const tr=React.useCallback(t=>{clRef.current.push({type:t,ts:Date.now()});if(t==="label_detail")lcRef.current=true;if(["agree_cta","keep_cta","pay_cta","freetrial_cta","subscribe_cta"].includes(t))ecRef.current++;},[]);
+
+      const startT=React.useCallback(()=>{tsRef.current=Date.now();clRef.current=[];ecRef.current=0;lcRef.current=false;},[]);
+
+      const saveT=React.useCallback(()=>{
+        const time=((Date.now()-tsRef.current)/1000).toFixed(2);
+        const task=curSeq.tasks[ti];
+        setTaskData(p=>[...p,{
+          participantId:pid,sequenceId:curSeq.id,taskOrder:ti+1,
+          taskType:task.type,taskTypeName:TN[task.type].en,labelLevel:task.label,
+          taskCompletionTimeSec:parseFloat(time),clickCount:clRef.current.length,
+          errorClickCount:ecRef.current,goalSuccess:ldRef.current.g?1:0,
+          labelClick:lcRef.current?1:0,decision:ldRef.current.v,
+          manipulationAwareness:ms[task.type]||"",timestamp:new Date().toISOString()
+        }]);
+      },[pid,curSeq,ti,ms]);
+
+      const doAssign=()=>{const s=assignSequence();setCurSeq(s);const newQ=incSeq(s.id);setQuotas(newQ);};
+
+      const nextTask=()=>{if(ti<4){setTI(p=>p+1);setTP("exposure");setPop(false);startT();}else setPh("postSurvey");};
+
+      const hA=a=>{if(a==="openDetail"){setPop(true);return;}setTP("decision");};
+
+      const hD=(v,g)=>{ldRef.current={v,g};setTP("survey");};
+
+      const hM=v=>{setMS(p=>({...p,[curType]:v}));};
+
+      const submitSurvey=()=>{saveT();nextTask();};
+
+      const finishExperiment=async()=>{
+        setSending(true);
+        const payload={participantId:pid,sequenceId:curSeq.id,demographics:dm,postSurvey:ps,phone,tasks:taskData,completedAt:new Date().toISOString()};
+        await saveResult(payload);
+        setSending(false);
+        setPh("intro");setCurSeq(null);setTI(0);setTP("exposure");setPop(false);
+        setDM({age:"",gender:"",occupation:"",education:"",commerceYears:"",commerceFreq:""});
+        setMS({});setPS({});setTaskData([]);setPhone("");setQuotas(getQuotas());
+      };
+
+      const SC={FA:FAScreen,OB:OBScreen,SN:SNScreen,II:IIScreen,SE:SEScreen};
+
+      return React.createElement("div",null,
+        React.createElement(Phone,{step,total:10,showBar:!["intro","finish"].includes(ph)},
+
+        // === INTRO ===
+        ph==="intro"&&React.createElement("div",{style:{padding:"24px 20px",flex:1,display:"flex",flexDirection:"column"}},
+          React.createElement("div",{style:{textAlign:"center",marginBottom:18}},
+            React.createElement("div",{style:{width:64,height:64,borderRadius:16,background:"linear-gradient(135deg,#3B82F6,#6366F1)",margin:"0 auto 12px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28}},"🔍"),
+            React.createElement("h1",{style:{fontSize:20,fontWeight:800,color:"#111",lineHeight:1.3}},"모바일 커머스 앱 다크패턴 라벨링",React.createElement("br"),"사용성 평가"),
+            React.createElement("p",{style:{fontSize:11,color:"#9CA3AF",marginTop:4}},"Mobile e-commerce app dark pattern labeling and its effects on differences in user perception")),
+          React.createElement("div",{style:{background:"#F9FAFB",borderRadius:10,padding:14,marginBottom:12,fontSize:12,color:"#555",lineHeight:1.7}},
+            React.createElement("p",{style:{marginBottom:6}},"본 연구는 모바일 커머스 앱 다크패턴 라벨링에 따른 사용자 인지 차이를 평가하기 위한 실험입니다."),
+            React.createElement("p",null,"실험은 약 15~20분 소요되며, 5개의 모바일 화면을 살펴본 후 간단한 설문에 응답합니다.")),
+          // [FIX #3] Changed padding:12px to padding:12 (was invalid JS syntax)
+          React.createElement("div",{style:{background:"#F0F9FF",borderRadius:10,padding:12,marginBottom:12,border:"1px solid #BAE6FD"}},
+            React.createElement("p",{style:{fontSize:11,fontWeight:700,color:"#0369A1",marginBottom:8}},"📊 실험 참여 현황 (랜덤 배정)"),
+            SEQUENCES.map(s=>{
+              const c=getSeqCount(quotas,s.id);
+              return React.createElement("div",{key:s.id,style:{padding:"6px 0",borderBottom:s.id<5?"1px solid #E0F2FE":"none",fontSize:10,color:"#334155",lineHeight:1.5}},
+                React.createElement("span",{style:{fontWeight:700,color:c>=MAX_PER_SEQ?"#DC2626":"#0369A1",marginRight:6}},c+"/"+MAX_PER_SEQ),
+                "S"+s.id+"(",s.tasks.map(t=>t.label+" "+t.type).join(" → "),")");
+            })),
+          React.createElement("p",{style:{fontSize:10,color:"#9CA3AF",textAlign:"center",marginBottom:10}},"상명대학교 대학원 경영학과 (MIS)",React.createElement("br"),"연구자: 조성진 | 지도교수: 유진호"),
+          React.createElement("div",{style:{flex:1}}),
+          React.createElement("button",{onClick:()=>setPh("consent"),style:{...bb,background:"linear-gradient(135deg,#3B82F6,#6366F1)"}},"실험 시작하기")),
+
+        // === CONSENT ===
+        ph==="consent"&&React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column"}},
+          React.createElement("h2",{style:{fontSize:18,fontWeight:700,marginBottom:14,color:"#111"}},"📋 연구 참여 동의서"),
+          React.createElement("div",{style:{background:"#F9FAFB",borderRadius:10,padding:16,fontSize:12,color:"#555",lineHeight:1.7,flex:1,overflowY:"auto"}},
+            [{t:"1. 연구 목적",d:"본 연구는 모바일 커머스 앱 다크패턴 라벨링에 따른 사용자 인지 차이를 평가하기 위한 실험입니다."},{t:"2. 참여 절차",d:"5개의 모바일 화면을 살펴보고, 각 화면에 대한 의사결정 및 설문응답을 수행합니다. 총 소요시간은 약 15~20분입니다."},{t:"3. 데이터 수집",d:"화면 조작 시간, 클릭 횟수, 의사결정 결과, 설문 응답이 수집됩니다. 모든 데이터는 익명으로 처리되며, 연구 목적으로만 사용됩니다."},{t:"4. 참여자 권리",d:"참여는 자발적이며, 언제든지 중단할 수 있습니다."},{t:"5. 개인정보 보호",d:"수집된 데이터는 연구 완료 후 3년간 보관 후 폐기됩니다."}].map((s,i)=>React.createElement("div",{key:i,style:{marginBottom:12}},React.createElement("p",{style:{fontWeight:600,color:"#333",marginBottom:4}},s.t),React.createElement("p",null,s.d)))),
+          React.createElement("button",{onClick:()=>{doAssign();setPh("demographics");},style:{...bb,marginTop:16}},"동의하고 계속하기")),
+
+        // === DEMOGRAPHICS ===
+        ph==="demographics"&&React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column",overflowY:"auto"}},
+          React.createElement("h2",{style:{fontSize:18,fontWeight:700,marginBottom:14,color:"#111"}},"👤 기본 정보"),
+          [{k:"age",l:"나이",o:["20대","30대","40대","50대","60대 이상"]},{k:"gender",l:"성별",o:["남성","여성","기타","응답하지 않음"]},{k:"occupation",l:"직업",o:["학생","직장인","자영업","전문직","주부","무직/기타"]},{k:"education",l:"최종 학력",o:["고등학교 졸업","대학교 재학/졸업","대학원 재학/졸업"]},{k:"commerceYears",l:"모바일 커머스 앱 이용 기간",o:["1년 미만","1~3년","3~5년","5년 이상"]},{k:"commerceFreq",l:"모바일 커머스 앱 사용 빈도",o:["거의 안함","1~2회/주","3~5회/주","매일"]}].map(({k,l,o})=>React.createElement("div",{key:k,style:{marginBottom:12}},
+            React.createElement("label",{style:{fontSize:13,fontWeight:600,color:"#333",display:"block",marginBottom:4}},l),
+            React.createElement("select",{value:dm[k],onChange:e=>setDM(p=>({...p,[k]:e.target.value})),style:{width:"100%",padding:"11px 12px",borderRadius:8,border:"1.5px solid #E5E7EB",fontSize:14,background:"#fff",color:dm[k]?"#111":"#9CA3AF"}},
+              React.createElement("option",{value:""},"선택해주세요"),o.map(v=>React.createElement("option",{key:v,value:v},v))))),
+          React.createElement("div",{style:{flex:1,minHeight:12}}),
+          React.createElement("button",{onClick:()=>setPh("instruction"),disabled:!dm.age||!dm.gender,style:{...bb,opacity:(!dm.age||!dm.gender)?0.4:1}},"다음")),
+
+        // === INSTRUCTION ===
+        ph==="instruction"&&React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column",justifyContent:"center"}},
+          React.createElement("div",{style:{background:"#EFF6FF",borderRadius:14,padding:22,marginBottom:16}},
+            React.createElement("h2",{style:{fontSize:16,fontWeight:700,marginBottom:14,color:"#1E40AF"}},"📱 실험 안내"),
+            ["1. 총 5개의 모바일 화면이 순서대로 제시됩니다.","2. 각 화면을 살펴본 후, 최종 의사결정을 선택해주세요.","3. 의사결정 후 간단한 1문항 설문에 응답합니다.","4. 5개 태스크 완료 후 전체 설문(3문항)에 응답합니다.","💡 정답은 없습니다. 평소처럼 자연스럽게 사용해주세요."].map((t,i)=>React.createElement("p",{key:i,style:{fontSize:13,color:"#444",lineHeight:1.7,marginBottom:8}},t))),
+          React.createElement("div",{style:{background:"#FEFCE8",borderRadius:10,padding:12,fontSize:12,color:"#854D0E"}},"⏱ 각 화면에서의 조작 시간과 클릭이 자동으로 기록됩니다."),
+          React.createElement("div",{style:{flex:1}}),
+          React.createElement("button",{onClick:()=>{setPh("task");startT();},style:{...bb,background:"linear-gradient(135deg,#3B82F6,#6366F1)"}},"태스크 시작 →")),
+
+        // === TASK ===
+        ph==="task"&&curType&&React.createElement("div",{style:{flex:1,display:"flex",flexDirection:"column",position:"relative"}},
+          React.createElement("div",{style:{background:"#F9FAFB",padding:"8px 16px",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:"1px solid #F3F4F6",flexShrink:0}},
+            React.createElement("span",{style:{fontSize:12,color:"#9CA3AF"}},"태스크 "+(ti+1)+"/5"),
+            React.createElement("span",{style:{background:"#EFF6FF",color:"#3B82F6",padding:"2px 10px",borderRadius:20,fontWeight:600,fontSize:11}},TN[curType].ko)),
+          tp==="exposure"&&React.createElement(SC[curType],{label:curLabel,onA:hA,tr}),
+          tp==="decision"&&React.createElement(Decision,{type:curType,onD:hD,tr}),
+          tp==="survey"&&React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column"}},
+            React.createElement("div",{style:{background:"#F0FDF4",borderRadius:10,padding:12,textAlign:"center",marginBottom:16}},React.createElement("span",{style:{fontSize:18}},"✅"),React.createElement("p",{style:{fontSize:14,fontWeight:600,color:"#166534",marginTop:2}},"태스크 "+(ti+1)+" 완료")),
+            React.createElement(Likert,{q:MQ,v:ms[curType],onChange:hM}),
+            React.createElement("div",{style:{flex:1}}),
+            React.createElement("button",{onClick:submitSurvey,disabled:!ms[curType],style:{...bb,opacity:ms[curType]?1:0.4}},ti<4?"다음 태스크 →":"전체 설문으로 →")),
+          pop&&React.createElement(Popup,{type:curType,onClose:()=>setPop(false)})),
+
+        // === POST SURVEY ===
+        ph==="postSurvey"&&React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column"}},
+          React.createElement("h2",{style:{fontSize:18,fontWeight:700,marginBottom:4,color:"#111"}},"📝 전체 평가 설문"),
+          React.createElement("p",{style:{fontSize:12,color:"#9CA3AF",marginBottom:16}},"전체 실험 경험에 대해 평가해주세요."),
+          POST_ITEMS.map(item=>React.createElement(Likert,{key:item.id,q:item.text,v:ps[item.id],onChange:v=>setPS(p=>({...p,[item.id]:v}))})),
+          React.createElement("div",{style:{flex:1}}),
+          React.createElement("button",{onClick:()=>setPh("finish"),disabled:!ps.fairness||!ps.transparency||!ps.trust,style:{...bb,opacity:(ps.fairness&&ps.transparency&&ps.trust)?1:0.4}},"제출하기")),
+
+        // === FINISH ===
+        ph==="finish"&&React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column"}},
+          React.createElement("div",{style:{textAlign:"center",marginBottom:16}},
+            React.createElement("div",{style:{width:56,height:56,borderRadius:"50%",background:"linear-gradient(135deg,#10B981,#34D399)",margin:"0 auto 10px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24}},"🎉"),
+            React.createElement("h2",{style:{fontSize:18,fontWeight:700,color:"#111"}},"실험이 완료되었습니다!"),
+            React.createElement("p",{style:{fontSize:13,color:"#6B7280",marginTop:4}},"참여해주셔서 감사합니다.")),
+          React.createElement("div",{style:{background:"#FEFCE8",borderRadius:12,padding:14,marginBottom:12,fontSize:11,color:"#854D0E",lineHeight:1.7}},
+            React.createElement("p",{style:{fontWeight:600,marginBottom:6}},"📢 디브리핑"),
+            React.createElement("p",null,"본 연구는 모바일 커머스 앱 다크패턴 라벨링에 따른 사용자 인지 차이를 평가하기 위한 실험이었습니다. 실험에서 보신 화면들은 실제 서비스를 모사한 프로토타입이며, 실제 결제나 가입이 이루어지지 않았습니다.")),
+          React.createElement("div",{style:{background:"#F0FDF4",borderRadius:12,padding:16,marginBottom:12,border:"1px solid #BBF7D0"}},
+            React.createElement("p",{style:{fontSize:12,fontWeight:600,color:"#166534",marginBottom:8}},"🎁 답례품 안내"),
+            React.createElement("p",{style:{fontSize:11,color:"#555",lineHeight:1.7,marginBottom:12}},"연구에선 실험참여자 분들을 대상으로 100% 당첨 랜덤 답례품을 드릴 목적으로 전화번호를 수집합니다. 실험자 전화번호는 랜덤 답례품 증정 후 즉시 파기하고 제3자에게 노출되지 않음을 밝힙니다."),
+            React.createElement("label",{style:{fontSize:12,fontWeight:600,color:"#333",display:"block",marginBottom:6}},"전화번호"),
+            React.createElement("input",{type:"tel",value:phone,onChange:e=>setPhone(e.target.value),placeholder:"010-0000-0000",style:{width:"100%",padding:"12px 14px",borderRadius:8,border:"1.5px solid #D1D5DB",fontSize:15,background:"#fff",textAlign:"center",letterSpacing:1}})),
+          React.createElement("div",{style:{flex:1}}),
+          React.createElement("button",{onClick:finishExperiment,disabled:sending,style:{...bb,background:sending?"#9CA3AF":"linear-gradient(135deg,#DC2626,#B91C1C)"}},sending?"저장 중...":"실험 종료"))),
+
+      React.createElement("p",{style:{marginTop:10,fontSize:9,color:"#9CA3AF",textAlign:"center"}},"상명대학교 대학원 | Study 4: Dark Pattern Labeling Usability Test"));
+    }
+
+    const rootEl = document.getElementById("root");
+    if (ReactDOM.createRoot) {
+      ReactDOM.createRoot(rootEl).render(React.createElement(App));
+    } else {
+      ReactDOM.render(React.createElement(App), rootEl);
+    }
+  </script>
 </body>
 </html>
