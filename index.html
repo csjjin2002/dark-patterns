@@ -107,7 +107,7 @@ const LABEL_ALPHA = 0.7;
 function Banner({label,type,onD}){
   if(label==="L0")return null;const n=TN[type];const sc={FA:87,OB:82,SN:91,II:78,SE:85};
   if(label==="L1")return React.createElement("div",{style: {background: `rgba(245,158,11,${LABEL_ALPHA})`, color:"#fff",padding:"10px 16px",fontSize:12,fontWeight:600,flexShrink:0}},"⚠️ 다크패턴 감지: "+n.ko+" ("+n.en+")");
-  return React.createElement("div",{style:{background: `rgba(220,38,38,${LABEL_ALPHA})`,,color:"#fff",padding:"10px 16px",fontSize:12,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:6,flexShrink:0}},
+  return React.createElement("div",{style:{background: `rgba(220,38,38,${LABEL_ALPHA})`,color:"#fff",padding:"10px 16px",fontSize:12,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:6,flexShrink:0}},
     React.createElement("span",null,"🔴 위험 "+sc[type]+"/100 — "+n.ko),
     React.createElement("button",{onClick:onD,style:{background:"rgba(255,255,255,0.2)",border:"1px solid rgba(255,255,255,0.4)",borderRadius:4,color:"#fff",padding:"3px 10px",fontSize:11,cursor:"pointer"}},"자세히 >"));
 }
