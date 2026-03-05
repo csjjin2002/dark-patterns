@@ -19,7 +19,12 @@ button,input,select{font-family:inherit;outline:none}
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const{useState,useRef,useCallback}=React;
+const rootEl = document.getElementById("root");
+  if (ReactDOM.createRoot) {
+    ReactDOM.createRoot(rootEl).render(React.createElement(App));
+  } else {
+    ReactDOM.render(React.createElement(App), rootEl);
+  }
 
 // ====== EXPERIMENT CONFIG ======
 const TN={FA:{ko:"강제행동",en:"Forced Action"},OB:{ko:"방해·저지",en:"Obstruction"},SN:{ko:"스네이킹",en:"Sneaking"},II:{ko:"인터페이스 조작",en:"Interface Interference"},SE:{ko:"사회공학",en:"Social Engineering"}};
