@@ -247,10 +247,10 @@
       const c={FA:{t:"월회비 변경 최종 확인",d:"C커머스 Yes! 멤버십 멤버십 월회비 7,890원 변경에 대한 최종 선택을 해주세요.",o:[{l:"동의하고 혜택 계속 받기 >",v:"agree",g:false},{l:"나중에 하기",v:"refuse",g:true}]},OB:{t:"해지 최종 확인",d:"해지를 완료하면 멤버십이 해지되어 혜택이 종료됩니다.",o:[{l:"멤버십 유지하기",v:"keep",g:false},{l:"해지하기",v:"cancel",g:true}]},SN:{t:"결제 최종 확인",d:"아래 주문 내역을 확인하고 결제를 진행하세요.",o:[{l:"27,690원 결제하기",v:"pay",g:false},{l:"취소",v:"cancel_pay",g:true}]},II:{t:"무료체험 신청",d:"지금 무료체험을 신청하면 즉시 Yes! 멤버십 혜택을 이용할 수 있습니다.",o:[{l:"무료체험 시작하기 >",v:"start",g:false},{l:"나중에 혜택받기",v:"skip",g:true}]},SE:{t:"멤버십 가입 확인",d:"지금 확인하고 Yes! 멤버십 멤버십에 가입하시겠습니까?",o:[{l:"결제하고 시작하기 >",v:"sub",g:false},{l:"나중에 혜택받기",v:"skip_sub",g:true}]}};
       const x=c[type];
       return React.createElement("div",{style:{padding:24,flex:1,display:"flex",flexDirection:"column"}},
-        React.createElement("div",{style:{background:"#DC2626",borderRadius:8,padding:"8px 14px",marginBottom:16,textAlign:"center"}},React.createElement("span",{style:{color:"#fff",fontSize:13,fontWeight:600}},"결정")),
+        React.createElement("div",{style:{background:"#E0E7FF",borderRadius:8,padding:"8px 14px",marginBottom:16,textAlign:"center"}},React.createElement("span",{style:{color:"#4338CA",fontSize:13,fontWeight:600}},"당신의 선택은?")),
         React.createElement("h2",{style:{fontSize:17,fontWeight:700,marginBottom:8,color:"#111"}},x.t),
         React.createElement("p",{style:{fontSize:13,color:"#6B7280",marginBottom:20,lineHeight:1.5}},x.d),
-        x.o.map((o,i)=>React.createElement("button",{key:i,onClick:()=>{tr("dec_"+o.v);onD(o.v,o.g);},style:i===0?{...bb,marginTop:4}:{...gb}},o.l)));
+        x.o.map((o,i)=>React.createElement("button",{key:i,onClick:()=>{tr("dec_"+o.v);onD(o.v,o.g);},style:i===0?{...bb,marginTop:4}:{background:"#DC2626",color:"#fff",border:"none",borderRadius:8,padding:"14px 0",fontSize:14,fontWeight:600,cursor:"pointer",width:"100%",marginTop:6}},o.l)));
     }
 
     // ====== MAIN APP ======
