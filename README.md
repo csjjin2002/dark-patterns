@@ -1,4 +1,4 @@
-# 🔬 Dark Pattern Labeling Usability Test
+# 🔬 Dark Pattern Labeling Test
 
 **Study 4: Within-subjects design — 5 sequences with mixed label levels per task**
 
